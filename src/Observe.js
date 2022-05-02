@@ -31,12 +31,45 @@ export default (Socket, { store, ...otherOptions } = {}) => {
     const actions = getRegisteredActions(store);
     const unwrappedPayload = unwrapIfSingle(payload);
 
-    mutations
-      .filter((namespacedMutation) => trimNamespace(namespacedMutation) === desiredMutation)
+     mutations
+      .filter((namespacedMutation) => 
+              {
+      
+      if(options?.mutation)
+            {
+                if(options.mutation[event])
+                {
+                    if(options.mutation[event]===namespacedMutation)
+                    {
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }
+            }
+            return trimNamespace(namespacedMutation) === desiredMutation;
+    }
+             
+             )
       .forEach((namespacedMutation) => store.commit(namespacedMutation, unwrappedPayload));
 
     actions
-      .filter((namespacedAction) => trimNamespace(namespacedAction) === desiredAction)
+      .filter((namespacedAction) => 
+              {  if(options?.action)
+            {
+                if(options.action[event])
+                {
+                    if(options.action[event]===namespacedAction)
+                    {
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }
+            }
+            return trimNamespace(namespacedAction) === desiredAction;}
+             
+             )
       .forEach((namespacedAction) => store.dispatch(namespacedAction, unwrappedPayload));
   }
 
